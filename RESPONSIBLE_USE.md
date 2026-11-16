@@ -33,10 +33,14 @@ When downloading, you choose the type of use (`Propio`, `Edu` or `Referencia`). 
 
 The credits record the license the platform states for the video, when it reports one. That detail may be missing, incomplete or wrong. If you are going to publish, check the license at the original source. "No indicada" (not stated) does not mean "free to use".
 
-## 6. Respect people
+## 6. Transcriptions and translations follow the same rule
+
+The transcribed text and its translations derive from the original content. If you cannot publish the clip, you cannot publish its transcription or translation either. They are also automatic and may contain errors: review them before using them and do not attribute to anyone words they did not say.
+
+## 7. Respect people
 
 Do not use the tool to download private content, to harass anyone, or to reuse other people's image or voice without their consent.
 
-## 7. No warranty
+## 8. No warranty
 
 This document is not legal advice. The tool is provided as is, without warranty of any kind. Whoever uses it is responsible for how they use it and for complying with the laws and terms that apply to them.

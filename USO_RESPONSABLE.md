@@ -33,10 +33,14 @@ Los clips de `Referencia` se marcan **NO-PUBLICAR** en el nombre de la carpeta y
 
 Los créditos recogen la licencia que la plataforma declara para el video, cuando la informa. Ese dato puede faltar, estar incompleto o ser incorrecto. Si vas a publicar, comprueba la licencia en la fuente original. «No indicada» no significa «de uso libre».
 
-## 6. Respeta a las personas
+## 6. Las transcripciones y traducciones siguen la misma regla
+
+El texto transcrito y sus traducciones derivan del contenido original. Si no puedes publicar el clip, tampoco puedes publicar su transcripción ni su traducción. Además, son automáticas y pueden contener errores: revísalas antes de usarlas y no atribuyas a nadie palabras que no dijo.
+
+## 7. Respeta a las personas
 
 No uses la herramienta para descargar contenido privado, para acosar a nadie ni para reutilizar la imagen o la voz de otras personas sin su consentimiento.
 
-## 7. Sin garantías
+## 8. Sin garantías
 
 Este documento no es asesoría legal. La herramienta se ofrece tal cual, sin garantías de ningún tipo. Quien la usa es responsable de cómo la usa y de cumplir las leyes y los términos que le correspondan.

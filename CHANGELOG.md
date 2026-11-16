@@ -8,10 +8,20 @@ Este archivo sigue el formato de [Keep a Changelog](https://keepachangelog.com/e
 
 ### Previsto
 
-- Compatibilidad con Instagram y TikTok.
-- Transcripción local a `.txt` y `.srt`.
-- Traducción local a español, inglés e italiano.
 - Ventana gráfica, cola de descargas, varios tramos por video y ejecutable `.exe`.
+
+## [0.2.0] - 2026-11-16
+
+### Añadido
+
+- Compatibilidad con Instagram y TikTok.
+- Opción `--transcribir`: transcripción local del clip a `transcripcion_original.txt` y `.srt`, con detección automática del idioma y uso de tarjeta NVIDIA si está disponible.
+- Opción `--traducir`: traducción local de la transcripción a español, inglés e italiano, en `.txt` y `.srt` con los mismos tiempos.
+- `fuente.json` registra el idioma detectado, la confianza de la detección y el modelo de transcripción.
+
+### Cambiado
+
+- Los errores de descarga se explican en lenguaje claro: inicio de sesión requerido, enlace no compatible, video no disponible o falta de conexión.
 
 ## [0.1.0] - 2026-11-16
 

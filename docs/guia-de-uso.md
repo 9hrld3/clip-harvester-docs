@@ -2,7 +2,7 @@
 
 **Español** · [English](usage-guide.md)
 
-Esta guía describe la versión 0.1.0, que se usa desde la consola. Antes de empezar, lee el [aviso de uso responsable](../USO_RESPONSABLE.md).
+Esta guía describe la versión 0.2.0, que se usa desde la consola. Antes de empezar, lee el [aviso de uso responsable](../USO_RESPONSABLE.md).
 
 ## El comando
 
@@ -20,6 +20,12 @@ Descargando el tramo...
 Escribiendo créditos...
 Listo: clips\Referencia\2026-11-16_canal-ejemplo-titulo-del-video_01m20-01m32_NO-PUBLICAR
 ```
+
+## Plataformas
+
+Funciona con enlaces de YouTube, Instagram y TikTok. Usa el enlace directo al video, no el de un perfil ni el de una lista.
+
+Instagram y TikTok piden con frecuencia haber iniciado sesión. En ese caso, inicia sesión en tu navegador y añade `--cookies` con el nombre del navegador.
 
 ## Cómo escribir los tiempos
 
@@ -66,6 +72,40 @@ Usa la sesión iniciada en un navegador (`chrome`, `edge` o `firefox`) para vide
 ### `--salida CARPETA`
 
 Cambia la carpeta de salida. Por defecto es `clips`, dentro de la carpeta desde la que ejecutas el comando.
+
+### `--transcribir`
+
+Convierte en texto lo que se dice en el clip y lo guarda junto a él como `transcripcion_original.txt` y `transcripcion_original.srt`.
+
+- El idioma se detecta automáticamente.
+- La primera vez se descarga el modelo de transcripción (`large-v3-turbo`), que ocupa más de 1 GB, en una carpeta `modelos/` junto al programa. Después funciona sin internet.
+- Si el equipo tiene una tarjeta NVIDIA configurada, se usa para ir más rápido. Si no, o si falla, se usa el procesador, que es más lento.
+- Si la voz no se distingue bien (por ejemplo, un clip que solo tiene música), el programa avisa con «Voz poco clara» y deja la transcripción vacía, en lugar de inventar texto.
+
+### `--traducir IDIOMAS`
+
+Traduce la transcripción a uno o varios idiomas, separados por comas y sin espacios: `es` (español), `en` (inglés), `it` (italiano). Por ejemplo, `--traducir es,en,it`.
+
+- No hace falta añadir `--transcribir`: la traducción ya la incluye.
+- Por cada idioma se guardan `traduccion_<idioma>.txt` y `traduccion_<idioma>.srt`. Los subtítulos conservan los tiempos del original.
+- El idioma original del clip se omite: si el clip está en inglés y pides `es,en,it`, obtienes español e italiano.
+- Solo se traduce si el idioma original es español, inglés o italiano. Con otro idioma, el programa avisa y deja solo la transcripción.
+- La primera vez se descargan los paquetes de idioma. Después funciona sin internet.
+- Es traducción automática: revísala antes de publicarla.
+
+Con transcripción y traducción, la salida de la consola se ve así:
+
+```text
+Leyendo datos del video...
+Descargando el tramo...
+Escribiendo créditos...
+Cargando modelo large-v3-turbo (GPU); la primera vez se descarga.
+Transcribiendo...
+Idioma detectado: en (98%).
+Traduciendo a español...
+Traduciendo a italiano...
+Listo: clips\Propio\2026-11-16_canal-ejemplo-titulo-del-video_00m10-00m45
+```
 
 ## Qué se guarda
 
@@ -119,6 +159,18 @@ Los mismos datos en formato estructurado, más algunos adicionales: identificado
 | `inicio`, `fin`, `inicio_s`, `fin_s`, `duracion_s` | Tramo descargado. |
 | `fecha_descarga` | Fecha y hora de la descarga. |
 | `tipo_uso`, `publicable`, `notas` | Lo que declaraste al descargar. |
+| `idioma_detectado`, `confianza_idioma`, `modelo_transcripcion` | Solo si transcribiste: idioma detectado, seguridad de la detección (de 0 a 1) y modelo usado. |
+
+### Transcripción y traducciones
+
+| Archivo | Contenido |
+|---|---|
+| `transcripcion_original.txt` | El texto, una frase por línea. |
+| `transcripcion_original.srt` | Subtítulos con tiempos, listos para un editor de video. |
+| `traduccion_<idioma>.txt` | El texto traducido. |
+| `traduccion_<idioma>.srt` | Subtítulos traducidos, con los mismos tiempos. |
+
+Los tiempos de los subtítulos son relativos al inicio del clip, no al video original.
 
 ### `_indice.csv`
 
@@ -132,7 +184,9 @@ Se abre directamente en Excel con las tildes correctas.
 
 ## Limitaciones conocidas
 
-- Solo se ha probado con YouTube. Instagram y TikTok están en la hoja de ruta.
+- Instagram y TikTok cambian a menudo: si una descarga deja de funcionar, actualiza yt-dlp.
+- La traducción solo funciona entre español, inglés e italiano.
+- La transcripción puede fallar o quedar vacía con música alta, ruido o varias personas hablando a la vez.
 - Se descarga un tramo por comando.
 - Si repites el mismo tramo del mismo video el mismo día, el clip se sobrescribe y el índice recibe una fila más.
 - La resolución máxima es 1080p.
@@ -147,6 +201,13 @@ Se abre directamente en Excel con las tildes correctas.
 | `ffmpeg` no encontrado, o el corte falla | Instala ffmpeg y comprueba que está en el `PATH`. |
 | `No module named yt_dlp` | Ejecuta `pip install -U yt-dlp`. |
 | La descarga falla en un video que antes funcionaba | Actualiza yt-dlp: las plataformas cambian con frecuencia. |
-| El video pide iniciar sesión | Inicia sesión en tu navegador y usa `--cookies`. |
+| `… pide iniciar sesión para este video` | Inicia sesión en tu navegador y usa `--cookies`. Si ya lo usabas, comprueba que la sesión sigue abierta y que el video no es privado. |
+| `El enlace no es de un video compatible` | Copia el enlace directo al video. |
+| `El video no está disponible` | Fue borrado, es privado o está bloqueado en tu región. |
+| `No hay conexión a internet para descargar el video` | Revisa tu conexión. |
+| `Voz poco clara … no se genera transcripción` | El clip no tiene voz reconocible; la transcripción queda vacía y no se traduce. |
+| `El idioma original (…) no tiene traducción local` | El clip no está en español, inglés ni italiano. |
+| `La GPU no respondió; se usa la CPU` | No es un error: la transcripción continúa, más lenta. |
+| `No module named faster_whisper` o `argostranslate` | Instala el paquete que falta con `pip install`. |
 
-Cuando ocurre un error, el programa lo muestra con el prefijo `Error:` y termina sin escribir créditos ni tocar el índice.
+Cuando ocurre un error, el programa lo muestra con el prefijo `Error:` y termina. Si falla la descarga, no se escriben créditos ni se toca el índice. Si falla la transcripción o la traducción, el clip y sus créditos ya están guardados.

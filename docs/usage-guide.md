@@ -2,7 +2,7 @@
 
 [Español](guia-de-uso.md) · **English**
 
-This guide describes version 0.1.0, which is used from the command line. Read the [responsible use notice](../RESPONSIBLE_USE.md) before you start.
+This guide describes version 0.2.0, which is used from the command line. Read the [responsible use notice](../RESPONSIBLE_USE.md) before you start.
 
 The program's options, messages, file names and credit fields are in Spanish. They are shown here as they are, with a translation where it helps.
 
@@ -24,6 +24,12 @@ Listo: clips\Referencia\2026-11-16_example-channel-video-title_01m20-01m32_NO-PU
 ```
 
 (Reading video data, downloading the segment, writing credits, done.)
+
+## Platforms
+
+It works with YouTube, Instagram and TikTok links. Use the direct link to the video, not the link to a profile or a playlist.
+
+Instagram and TikTok often require being signed in. In that case, sign in with your browser and add `--cookies` with the browser's name.
 
 ## How to write times
 
@@ -70,6 +76,42 @@ Uses the session of a browser (`chrome`, `edge` or `firefox`) for videos that re
 ### `--salida FOLDER`
 
 Changes the output folder. The default is `clips`, inside the folder you run the command from.
+
+### `--transcribir`
+
+Turns what is said in the clip into text and saves it next to the clip as `transcripcion_original.txt` and `transcripcion_original.srt`.
+
+- The language is detected automatically.
+- The first time, the transcription model (`large-v3-turbo`), which takes more than 1 GB, is downloaded into a `modelos/` folder next to the program. After that it works offline.
+- If the machine has an NVIDIA card set up, it is used to go faster. If not, or if it fails, the processor is used, which is slower.
+- If the voice is not clear enough (for example, a clip with only music), the program warns with "Voz poco clara" (unclear voice) and leaves the transcription empty instead of making text up.
+
+### `--traducir LANGUAGES`
+
+Translates the transcription into one or more languages, comma-separated and without spaces: `es` (Spanish), `en` (English), `it` (Italian). For example, `--traducir es,en,it`.
+
+- There is no need to add `--transcribir`: translation already includes it.
+- For each language, `traduccion_<language>.txt` and `traduccion_<language>.srt` are saved. The subtitles keep the timings of the original.
+- The clip's original language is skipped: if the clip is in English and you ask for `es,en,it`, you get Spanish and Italian.
+- Translation only happens if the original language is Spanish, English or Italian. With any other language, the program says so and leaves only the transcription.
+- The first time, the language packages are downloaded. After that it works offline.
+- This is machine translation: review it before publishing.
+
+With transcription and translation, the console output looks like this:
+
+```text
+Leyendo datos del video...
+Descargando el tramo...
+Escribiendo créditos...
+Cargando modelo large-v3-turbo (GPU); la primera vez se descarga.
+Transcribiendo...
+Idioma detectado: en (98%).
+Traduciendo a español...
+Traduciendo a italiano...
+Listo: clips\Propio\2026-11-16_example-channel-video-title_00m10-00m45
+```
+
+(Loading the model, transcribing, detected language, translating into Spanish and Italian.)
 
 ## What gets saved
 
@@ -125,6 +167,18 @@ The same data in structured form, plus a few extras: video identifier, original 
 | `inicio`, `fin`, `inicio_s`, `fin_s`, `duracion_s` | Downloaded segment. |
 | `fecha_descarga` | Download date and time. |
 | `tipo_uso`, `publicable`, `notas` | What you declared when downloading. |
+| `idioma_detectado`, `confianza_idioma`, `modelo_transcripcion` | Only if you transcribed: detected language, detection confidence (0 to 1) and model used. |
+
+### Transcription and translations
+
+| File | Content |
+|---|---|
+| `transcripcion_original.txt` | The text, one sentence per line. |
+| `transcripcion_original.srt` | Timed subtitles, ready for a video editor. |
+| `traduccion_<language>.txt` | The translated text. |
+| `traduccion_<language>.srt` | Translated subtitles, with the same timings. |
+
+Subtitle timings are relative to the start of the clip, not to the original video.
 
 ### `_indice.csv`
 
@@ -138,7 +192,9 @@ It opens directly in Excel with accented characters shown correctly.
 
 ## Known limitations
 
-- Only tested with YouTube. Instagram and TikTok are on the roadmap.
+- Instagram and TikTok change often: if a download stops working, update yt-dlp.
+- Translation only works between Spanish, English and Italian.
+- Transcription may fail or come out empty with loud music, noise or several people talking at once.
 - One segment per command.
 - If you repeat the same segment of the same video on the same day, the clip is overwritten and the index gets one more row.
 - Maximum resolution is 1080p.
@@ -153,6 +209,13 @@ It opens directly in Excel with accented characters shown correctly.
 | `ffmpeg` not found, or the cut fails | Install ffmpeg and check that it is on the `PATH`. |
 | `No module named yt_dlp` | Run `pip install -U yt-dlp`. |
 | A download fails on a video that used to work | Update yt-dlp: platforms change often. |
-| The video asks you to sign in | Sign in with your browser and use `--cookies`. |
+| `… pide iniciar sesión para este video` | The platform requires sign-in: sign in with your browser and use `--cookies`. If you already did, check that the session is still open and that the video is not private. |
+| `El enlace no es de un video compatible` | Unsupported link: copy the direct link to the video. |
+| `El video no está disponible` | The video was deleted, is private or is blocked in your region. |
+| `No hay conexión a internet para descargar el video` | No internet connection: check it. |
+| `Voz poco clara … no se genera transcripción` | The clip has no recognisable voice; the transcription is left empty and is not translated. |
+| `El idioma original (…) no tiene traducción local` | The clip is not in Spanish, English or Italian. |
+| `La GPU no respondió; se usa la CPU` | Not an error: transcription continues, more slowly. |
+| `No module named faster_whisper` or `argostranslate` | Install the missing package with `pip install`. |
 
-When an error occurs, the program shows it with the `Error:` prefix and exits without writing credits or touching the index.
+When an error occurs, the program shows it with the `Error:` prefix and exits. If the download fails, no credits are written and the index is not touched. If transcription or translation fails, the clip and its credits are already saved.
